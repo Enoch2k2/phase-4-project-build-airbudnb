@@ -1,4 +1,5 @@
 class DogsController < ApplicationController
+  skip_before_action :authorized, only: [:index, :create]
   before_action :set_dog, only: [:show, :update, :destroy]
 
   # GET /dogs
@@ -18,7 +19,8 @@ class DogsController < ApplicationController
     @dog = Dog.new(dog_params)
 
     if @dog.save
-      render json: @dog, status: :created, location: @dog
+      @token = encode_token({ dog_id: @dog.id })
+      render json: { dog: @dog, token: @token }, status: :created
     else
       render json: @dog.errors, status: :unprocessable_entity
     end
@@ -46,6 +48,15 @@ class DogsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def dog_params
-      params.require(:dog).permit(:username, :password_digest)
+      params.require(:dog).permit(:username, :password)
     end
+=begin
+    params = {
+      required: {
+        permitted_attr_1: value_1,
+        permitted_attr_2: value_2,
+        permitted_attr_3: value_3
+      }
+    }
+=end
 end
