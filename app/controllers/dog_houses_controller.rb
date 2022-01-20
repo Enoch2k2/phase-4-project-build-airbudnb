@@ -5,7 +5,7 @@ class DogHousesController < ApplicationController
   def index
     @dog_houses = DogHouse.all
 
-    render json: @dog_houses
+    render json: @dog_houses, include: [{ trips: { include: [:dog], except: [:dog_id, :dog_house_id] }}]
   end
 
   # GET /dog_houses/1
